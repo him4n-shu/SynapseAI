@@ -1,0 +1,351 @@
+{
+  "info": {
+    "name": "AI Mock Interview API",
+    "description": "Complete API collection for testing the AI Mock Interview Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "interview_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "question_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"preferredRole\": \"frontend\",\n  \"experienceLevel\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Get Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Interview Flow",
+      "item": [
+        {
+          "name": "1. Start Interview",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"interview_id\", jsonData.interviewId);",
+                  "    pm.collectionVariables.set(\"question_id\", jsonData.question.id);",
+                  "    console.log(\"Interview ID:\", jsonData.interviewId);",
+                  "    console.log(\"Question ID:\", jsonData.question.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"frontend\",\n  \"experienceLevel\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/interview/start",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interview", "start"]
+            }
+          }
+        },
+        {
+          "name": "2. Submit Answer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    console.log(\"Score:\", jsonData.evaluation.score);",
+                  "    console.log(\"Feedback:\", jsonData.evaluation.feedback);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionId\": \"{{question_id}}\",\n  \"answer\": \"A closure is a function that has access to variables in its outer scope, even after the outer function has returned. This happens because JavaScript maintains a reference to the outer scope's variables through the closure.\",\n  \"timeSpent\": 95\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/interview/{{interview_id}}/submit-answer",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interview", "{{interview_id}}", "submit-answer"]
+            }
+          }
+        },
+        {
+          "name": "3. Get Next Question",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.question) {",
+                  "        pm.collectionVariables.set(\"question_id\", jsonData.question.id);",
+                  "        console.log(\"Next Question ID:\", jsonData.question.id);",
+                  "    }",
+                  "    if (jsonData.isComplete) {",
+                  "        console.log(\"All questions completed!\");",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/interview/{{interview_id}}/next-question",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interview", "{{interview_id}}", "next-question"]
+            }
+          }
+        },
+        {
+          "name": "4. Complete Interview",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/interview/{{interview_id}}/complete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interview", "{{interview_id}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "5. Get Results",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/interview/{{interview_id}}/results",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interview", "{{interview_id}}", "results"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Interview Management",
+      "item": [
+        {
+          "name": "Get Interview History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/interview/history?limit=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interview", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Interview Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/interview/{{interview_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interview", "{{interview_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
