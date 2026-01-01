@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Play } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
@@ -57,10 +57,8 @@ const OAuthCallback = () => {
       <div className="text-center relative">
         {/* Logo with animation */}
         <div className="inline-flex items-center gap-3 mb-6">
-          <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center animate-pulse-glow">
-            <Play className="w-8 h-8 text-primary fill-primary" />
-          </div>
-          <span className="text-3xl font-bold text-foreground">InterviewAI</span>
+          <Logo size="large" />
+          <span className="text-3xl font-bold text-foreground">SynapseAI</span>
         </div>
 
         {/* Loading message */}
